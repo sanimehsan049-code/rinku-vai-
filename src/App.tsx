@@ -16,6 +16,26 @@ import { doctorData } from './config/doctorData';
 export default function App() {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [preselectedService, setPreselectedService] = useState<string>('');
+  
+  // Custom user photo state with localStorage persistence
+  const [currentPortrait, setCurrentPortrait] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('dr_mahabub_user_portrait');
+      if (saved) return saved;
+    } catch {
+      // ignore
+    }
+    return doctorData.doctor.portrait;
+  });
+
+  const handleUpdatePortrait = (newImg: string) => {
+    setCurrentPortrait(newImg);
+    try {
+      localStorage.setItem('dr_mahabub_user_portrait', newImg);
+    } catch {
+      // ignore
+    }
+  };
 
   // Scroll spy to highlight active section among: home, about, service, contact
   useEffect(() => {
@@ -51,10 +71,13 @@ export default function App() {
       {/* Main Single Page Content */}
       <main className="flex-1 w-full">
         {/* 2. Home Section (Clean Hero matching the banner) */}
-        <HeroSection currentPortrait={doctorData.doctor.portrait} />
+        <HeroSection
+          currentPortrait={currentPortrait}
+          onUpdatePortrait={handleUpdatePortrait}
+        />
 
         {/* 3. About Section (Directly below Home) */}
-        <AboutSection currentPortrait={doctorData.doctor.portrait} />
+        <AboutSection currentPortrait={currentPortrait} />
 
         {/* 4. Service Section (Directly below About) */}
         <ServiceSection
